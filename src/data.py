@@ -1,3 +1,4 @@
+# src/data.py
 import re
 from typing import Dict, List, Tuple
 
@@ -8,22 +9,36 @@ from ray.data import Dataset
 from sklearn.model_selection import train_test_split
 from transformers import BertTokenizer
 
+# Import your own modules
 from src.config import STOPWORDS
+from src import utils
+
+# Define the default path to your config file
+CONFIG_PATH = "config/config.yaml"
 
 
-def load_data(dataset_loc: str, num_samples: int = None) -> Dataset:
-    """Load data from source into a Ray Dataset.
+def load_data(config_path: str = CONFIG_PATH) -> Dataset:
+    """Load data from the source specified in the config file.
 
     Args:
-        dataset_loc (str): Location of the dataset.
-        num_samples (int, optional): The number of samples to load. Defaults to None.
+        config_path (str): Path to the YAML configuration file.
 
     Returns:
-        Dataset: Our dataset represented by a Ray Dataset.
+        Dataset: The loaded dataset represented by a Ray Dataset.
     """
+    # Load the configuration from the YAML file
+    config = utils.load_config(config_path)
+
+    # Get the dataset URL from the loaded config
+    dataset_loc = config["data"]["dataset_loc"]
+    num_samples = config["data"].get("num_samples")  # Use .get() for optional keys
+
+    # Read the data into a Ray Dataset
     ds = ray.data.read_csv(dataset_loc)
     ds = ds.random_shuffle(seed=1234)
     ds = ray.data.from_items(ds.take(num_samples)) if num_samples else ds
+
+    print("Data loaded successfully!")
     return ds
 
 
@@ -37,37 +52,23 @@ def stratify_split(
     """Split a dataset into train and test splits with equal
     amounts of data points from each class in the column we
     want to stratify on.
-
-    Args:
-        ds (Dataset): Input dataset to split.
-        stratify (str): Name of column to split on.
-        test_size (float): Proportion of dataset to split for test set.
-        shuffle (bool, optional): whether to shuffle the dataset. Defaults to True.
-        seed (int, optional): seed for shuffling. Defaults to 1234.
-
-    Returns:
-        Tuple[Dataset, Dataset]: the stratified train and test datasets.
+    
+    (This function's internal logic remains unchanged)
     """
 
-    def _add_split(df: pd.DataFrame) -> pd.DataFrame:  # pragma: no cover, used in parent function
-        """Naively split a dataframe into train and test splits.
-        Add a column specifying whether it's the train or test split."""
+    def _add_split(df: pd.DataFrame) -> pd.DataFrame:
         train, test = train_test_split(df, test_size=test_size, shuffle=shuffle, random_state=seed)
         train["_split"] = "train"
         test["_split"] = "test"
         return pd.concat([train, test])
 
-    def _filter_split(df: pd.DataFrame, split: str) -> pd.DataFrame:  # pragma: no cover, used in parent function
-        """Filter by data points that match the split column's value
-        and return the dataframe with the _split column dropped."""
+    def _filter_split(df: pd.DataFrame, split: str) -> pd.DataFrame:
         return df[df["_split"] == split].drop("_split", axis=1)
 
-    # Train, test split with stratify
-    grouped = ds.groupby(stratify).map_groups(_add_split, batch_format="pandas")  # group by each unique value in the column we want to stratify on
-    train_ds = grouped.map_batches(_filter_split, fn_kwargs={"split": "train"}, batch_format="pandas")  # combine
-    test_ds = grouped.map_batches(_filter_split, fn_kwargs={"split": "test"}, batch_format="pandas")  # combine
+    grouped = ds.groupby(stratify).map_groups(_add_split, batch_format="pandas")
+    train_ds = grouped.map_batches(_filter_split, fn_kwargs={"split": "train"}, batch_format="pandas")
+    test_ds = grouped.map_batches(_filter_split, fn_kwargs={"split": "test"}, batch_format="pandas")
 
-    # Shuffle each split (required)
     train_ds = train_ds.random_shuffle(seed=seed)
     test_ds = test_ds.random_shuffle(seed=seed)
 
@@ -76,39 +77,24 @@ def stratify_split(
 
 def clean_text(text: str, stopwords: List = STOPWORDS) -> str:
     """Clean raw text string.
-
-    Args:
-        text (str): Raw text to clean.
-        stopwords (List, optional): list of words to filter out. Defaults to STOPWORDS.
-
-    Returns:
-        str: cleaned text.
+    
+    (This function's internal logic remains unchanged)
     """
-    # Lower
     text = text.lower()
-
-    # Remove stopwords
     pattern = re.compile(r"\b(" + r"|".join(stopwords) + r")\b\s*")
     text = pattern.sub(" ", text)
-
-    # Spacing and filters
-    text = re.sub(r"([!\"'#$%&()*\+,-./:;<=>?@\\\[\]^_`{|}~])", r" \1 ", text)  # add spacing
-    text = re.sub("[^A-Za-z0-9]+", " ", text)  # remove non alphanumeric chars
-    text = re.sub(" +", " ", text)  # remove multiple spaces
-    text = text.strip()  # strip white space at the ends
-    text = re.sub(r"http\S+", "", text)  # remove links
-
+    text = re.sub(r"([!\"'#$%&()*\+,-./:;<=>?@\\\[\]^_`{|}~])", r" \1 ", text)
+    text = re.sub("[^A-Za-z0-9]+", " ", text)
+    text = re.sub(" +", " ", text)
+    text = text.strip()
+    text = re.sub(r"http\S+", "", text)
     return text
 
 
 def tokenize(batch: Dict) -> Dict:
     """Tokenize the text input in our batch using a tokenizer.
-
-    Args:
-        batch (Dict): batch of data with the text inputs to tokenize.
-
-    Returns:
-        Dict: batch of data with the results of tokenization (`input_ids` and `attention_mask`) on the text inputs.
+    
+    (This function's internal logic remains unchanged)
     """
     tokenizer = BertTokenizer.from_pretrained("allenai/scibert_scivocab_uncased", return_dict=False)
     encoded_inputs = tokenizer(batch["text"].tolist(), return_tensors="np", padding="longest")
@@ -117,28 +103,25 @@ def tokenize(batch: Dict) -> Dict:
 
 def preprocess(df: pd.DataFrame, class_to_index: Dict) -> Dict:
     """Preprocess the data in our dataframe.
-
-    Args:
-        df (pd.DataFrame): Raw dataframe to preprocess.
-        class_to_index (Dict): Mapping of class names to indices.
-
-    Returns:
-        Dict: preprocessed data (ids, masks, targets).
+    
+    (This function's internal logic remains unchanged)
     """
-    df["text"] = df.title + " " + df.description  # feature engineering
-    df["text"] = df.text.apply(clean_text)  # clean text
-    df = df.drop(columns=["id", "created_on", "title", "description"], errors="ignore")  # clean dataframe
-    df = df[["text", "tag"]]  # rearrange columns
-    df["tag"] = df["tag"].map(class_to_index)  # label encoding
+    df["text"] = df.title + " " + df.description
+    df["text"] = df.text.apply(clean_text)
+    df = df.drop(columns=["id", "created_on", "title", "description"], errors="ignore")
+    df = df[["text", "tag"]]
+    df["tag"] = df["tag"].map(class_to_index)
     outputs = tokenize(df)
     return outputs
 
 
 class CustomPreprocessor:
-    """Custom preprocessor class."""
-
+    """Custom preprocessor class.
+    
+    (This class's internal logic remains unchanged)
+    """
     def __init__(self, class_to_index={}):
-        self.class_to_index = class_to_index or {}  # mutable defaults
+        self.class_to_index = class_to_index or {}
         self.index_to_class = {v: k for k, v in self.class_to_index.items()}
 
     def fit(self, ds):

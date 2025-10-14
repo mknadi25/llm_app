@@ -3,6 +3,7 @@ import os
 import random
 from typing import Any, Dict, List
 
+import yaml
 import numpy as np
 import torch
 from ray.data import DatasetContext
@@ -22,6 +23,20 @@ def set_seeds(seed: int = 42):
     eval("setattr(torch.backends.cudnn, 'deterministic', True)")
     eval("setattr(torch.backends.cudnn, 'benchmark', False)")
     os.environ["PYTHONHASHSEED"] = str(seed)
+
+
+def load_config(config_path: str) -> Dict:
+    """Load a YAML file from a given path.
+
+    Args:
+        config_path (str): location of the YAML config file.
+
+    Returns:
+        Dict: loaded YAML data as a dictionary.
+    """
+    with open(config_path, "r") as f:
+        config = yaml.safe_load(f)
+    return config
 
 
 def load_dict(path: str) -> Dict:
