@@ -1,0 +1,4 @@
+# config/config.yaml
+
+data:
+  dataset_loc: "https://raw.githubusercontent.com/GokuMohandas/Made-With-ML/main/datasets/dataset.csv"
