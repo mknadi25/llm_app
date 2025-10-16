@@ -17,11 +17,17 @@ from src import utils
 CONFIG_PATH = "config/config.yaml"
 
 
-def load_data(config_path: str = CONFIG_PATH) -> Dataset:
+# In src/data.py
+
+def load_data(
+    config_path: str = CONFIG_PATH, dataset_loc: str = None, num_samples: int = None
+) -> Dataset:
     """Load data from the source specified in the config file.
 
     Args:
         config_path (str): Path to the YAML configuration file.
+        dataset_loc (str, optional): Location of the dataset, overrides config. Defaults to None.
+        num_samples (int, optional): Number of samples to load, overrides config. Defaults to None.
 
     Returns:
         Dataset: The loaded dataset represented by a Ray Dataset.
@@ -29,9 +35,11 @@ def load_data(config_path: str = CONFIG_PATH) -> Dataset:
     # Load the configuration from the YAML file
     config = utils.load_config(config_path)
 
-    # Get the dataset URL from the loaded config
-    dataset_loc = config["data"]["dataset_loc"]
-    num_samples = config["data"].get("num_samples")  # Use .get() for optional keys
+    # Get the dataset URL from the loaded config or use the provided argument
+    if not dataset_loc:
+        dataset_loc = config["data"]["dataset_loc"]
+    if not num_samples:
+        num_samples = config["data"].get("num_samples")  # Use .get() for optional keys
 
     # Read the data into a Ray Dataset
     ds = ray.data.read_csv(dataset_loc)

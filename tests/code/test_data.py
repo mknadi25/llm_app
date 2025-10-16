@@ -1,6 +1,7 @@
 import pandas as pd
 import pytest
 import ray
+from ray.data import Dataset
 
 from src import data
 
