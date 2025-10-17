@@ -24,7 +24,7 @@ def test_tune_models(dataset_loc):
         experiment_name=experiment_name,
         dataset_loc=dataset_loc,
         initial_params=json.dumps(initial_params),
-        num_workers=6,
+        num_workers=2,
         cpu_per_worker=1,
         gpu_per_worker=0,
         num_runs=num_runs,
