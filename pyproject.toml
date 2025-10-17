@@ -39,6 +39,10 @@ py39plus = true
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = "test_*.py"
+addopts = "--strict-markers --disable-pytest-warnings"
+markers = [
+    "training: tests that involve training",
+]
 
 # Pytest cov
 [tool.coverage.run]
