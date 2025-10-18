@@ -153,7 +153,7 @@ def train_model(
     experiment_name: Annotated[str, typer.Option(help="name of the experiment for this training workload.")] = None,
     dataset_loc: Annotated[str, typer.Option(help="location of the dataset.")] = None,
     train_loop_config: Annotated[str, typer.Option(help="arguments to use for training.")] = None,
-    num_workers: Annotated[int, typer.Option(help="number of workers to use for training.")] = 1,
+    num_workers: Annotated[int, typer.Option(help="number of workers to use for training.")] = 2,
     cpu_per_worker: Annotated[int, typer.Option(help="number of CPUs to use per worker.")] = 1,
     gpu_per_worker: Annotated[int, typer.Option(help="number of GPUs to use per worker.")] = 0,
     num_samples: Annotated[int, typer.Option(help="number of samples to use from dataset.")] = None,
