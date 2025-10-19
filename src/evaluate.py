@@ -13,7 +13,7 @@ from snorkel.slicing import PandasSFApplier, slicing_function
 from typing_extensions import Annotated
 
 from src import predict, utils
-from src.config import logger
+from src.config import logger, mlflow
 from src.predict import TorchPredictor
 
 # Initialize Typer CLI app
@@ -147,6 +147,10 @@ def evaluate(
     logger.info(json.dumps(metrics, indent=2))
     if results_fp:  # pragma: no cover, saving results
         utils.save_dict(d=metrics, path=results_fp)
+
+    with mlflow.start_run(run_id=run_id):
+        mlflow.log_dict(metrics, "evaluation_results.json")
+
     return metrics
 
 
