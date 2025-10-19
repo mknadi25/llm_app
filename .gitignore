@@ -5,6 +5,7 @@ mlflow/
 results/
 workspaces/
 efs/
+datasets/
 
 # VSCode
 .vscode/
