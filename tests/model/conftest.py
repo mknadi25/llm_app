@@ -5,7 +5,9 @@ from src.predict import TorchPredictor
 
 
 def pytest_addoption(parser):
-    parser.addoption("--run-id", action="store", default=None, help="Run ID of model to use.")
+    parser.addoption(
+        "--run-id", action="store", default=None, help="Run ID of model to use."
+    )
 
 
 @pytest.fixture(scope="module")

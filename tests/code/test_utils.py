@@ -43,8 +43,12 @@ def test_collate_fn():
     }
     processed_batch = utils.collate_fn(batch)
     expected_batch = {
-        "ids": torch.as_tensor([[1, 2, 0], [1, 2, 3]], dtype=torch.int32, device=get_device()),
-        "masks": torch.as_tensor([[1, 1, 0], [1, 1, 1]], dtype=torch.int32, device=get_device()),
+        "ids": torch.as_tensor(
+            [[1, 2, 0], [1, 2, 3]], dtype=torch.int32, device=get_device()
+        ),
+        "masks": torch.as_tensor(
+            [[1, 1, 0], [1, 1, 1]], dtype=torch.int32, device=get_device()
+        ),
         "targets": torch.as_tensor([3, 1], dtype=torch.int64, device=get_device()),
     }
     for k in batch:

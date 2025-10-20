@@ -21,7 +21,9 @@ CONFIG_PATH = "config/config.yaml"
 # In src/data.py
 
 
-def load_data(config_path: str = CONFIG_PATH, dataset_loc: str = None, num_samples: int = None) -> Dataset:
+def load_data(
+    config_path: str = CONFIG_PATH, dataset_loc: str = None, num_samples: int = None
+) -> Dataset:
     """Load data from the source specified in the config file.
 
     Args:
@@ -65,7 +67,9 @@ def stratify_split(
     """
 
     def _add_split(df: pd.DataFrame) -> pd.DataFrame:
-        train, test = train_test_split(df, test_size=test_size, shuffle=shuffle, random_state=seed)
+        train, test = train_test_split(
+            df, test_size=test_size, shuffle=shuffle, random_state=seed
+        )
         train["_split"] = "train"
         test["_split"] = "test"
         return pd.concat([train, test])
@@ -74,8 +78,12 @@ def stratify_split(
         return df[df["_split"] == split].drop("_split", axis=1)
 
     grouped = ds.groupby(stratify).map_groups(_add_split, batch_format="pandas")
-    train_ds = grouped.map_batches(_filter_split, fn_kwargs={"split": "train"}, batch_format="pandas")
-    test_ds = grouped.map_batches(_filter_split, fn_kwargs={"split": "test"}, batch_format="pandas")
+    train_ds = grouped.map_batches(
+        _filter_split, fn_kwargs={"split": "train"}, batch_format="pandas"
+    )
+    test_ds = grouped.map_batches(
+        _filter_split, fn_kwargs={"split": "test"}, batch_format="pandas"
+    )
 
     train_ds = train_ds.random_shuffle(seed=seed)
     test_ds = test_ds.random_shuffle(seed=seed)
@@ -104,9 +112,17 @@ def tokenize(batch: Dict) -> Dict:
 
     (This function's internal logic remains unchanged)
     """
-    tokenizer = BertTokenizer.from_pretrained("allenai/scibert_scivocab_uncased", return_dict=False)
-    encoded_inputs = tokenizer(batch["text"].tolist(), return_tensors="np", padding="longest")
-    return dict(ids=encoded_inputs["input_ids"], masks=encoded_inputs["attention_mask"], targets=np.array(batch["tag"]))
+    tokenizer = BertTokenizer.from_pretrained(
+        "allenai/scibert_scivocab_uncased", return_dict=False
+    )
+    encoded_inputs = tokenizer(
+        batch["text"].tolist(), return_tensors="np", padding="longest"
+    )
+    return dict(
+        ids=encoded_inputs["input_ids"],
+        masks=encoded_inputs["attention_mask"],
+        targets=np.array(batch["tag"]),
+    )
 
 
 def preprocess(df: pd.DataFrame, class_to_index: Dict) -> Dict:
@@ -140,4 +156,8 @@ class CustomPreprocessor:
         return self
 
     def transform(self, ds):
-        return ds.map_batches(preprocess, fn_kwargs={"class_to_index": self.class_to_index}, batch_format="pandas")
+        return ds.map_batches(
+            preprocess,
+            fn_kwargs={"class_to_index": self.class_to_index},
+            batch_format="pandas",
+        )

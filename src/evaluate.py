@@ -20,7 +20,9 @@ from src.predict import TorchPredictor
 app = typer.Typer()
 
 
-def get_overall_metrics(y_true: np.ndarray, y_pred: np.ndarray) -> Dict:  # pragma: no cover, eval workload
+def get_overall_metrics(
+    y_true: np.ndarray, y_pred: np.ndarray
+) -> Dict:  # pragma: no cover, eval workload
     """Get overall performance metrics.
 
     Args:
@@ -40,7 +42,9 @@ def get_overall_metrics(y_true: np.ndarray, y_pred: np.ndarray) -> Dict:  # prag
     return overall_metrics
 
 
-def get_per_class_metrics(y_true: np.ndarray, y_pred: np.ndarray, class_to_index: Dict) -> Dict:  # pragma: no cover, eval workload
+def get_per_class_metrics(
+    y_true: np.ndarray, y_pred: np.ndarray, class_to_index: Dict
+) -> Dict:  # pragma: no cover, eval workload
     """Get per class performance metrics.
 
     Args:
@@ -60,7 +64,9 @@ def get_per_class_metrics(y_true: np.ndarray, y_pred: np.ndarray, class_to_index
             "f1": metrics[2][i],
             "num_samples": np.float64(metrics[3][i]),
         }
-    sorted_per_class_metrics = OrderedDict(sorted(per_class_metrics.items(), key=lambda tag: tag[1]["f1"], reverse=True))
+    sorted_per_class_metrics = OrderedDict(
+        sorted(per_class_metrics.items(), key=lambda tag: tag[1]["f1"], reverse=True)
+    )
     return sorted_per_class_metrics
 
 
@@ -79,7 +85,9 @@ def short_text(x):  # pragma: no cover, eval workload
     return len(x.text.split()) < 8  # less than 8 words
 
 
-def get_slice_metrics(y_true: np.ndarray, y_pred: np.ndarray, ds: Dataset) -> Dict:  # pragma: no cover, eval workload
+def get_slice_metrics(
+    y_true: np.ndarray, y_pred: np.ndarray, ds: Dataset
+) -> Dict:  # pragma: no cover, eval workload
     """Get performance metrics for slices.
 
     Args:
@@ -96,7 +104,9 @@ def get_slice_metrics(y_true: np.ndarray, y_pred: np.ndarray, ds: Dataset) -> Di
     for slice_name in slices.dtype.names:
         mask = slices[slice_name].astype(bool)
         if sum(mask):
-            metrics = precision_recall_fscore_support(y_true[mask], y_pred[mask], average="micro")
+            metrics = precision_recall_fscore_support(
+                y_true[mask], y_pred[mask], average="micro"
+            )
             slice_metrics[slice_name] = {}
             slice_metrics[slice_name]["precision"] = metrics[0]
             slice_metrics[slice_name]["recall"] = metrics[1]
@@ -107,9 +117,15 @@ def get_slice_metrics(y_true: np.ndarray, y_pred: np.ndarray, ds: Dataset) -> Di
 
 @app.command()
 def evaluate(
-    run_id: Annotated[str, typer.Option(help="id of the specific run to load from")] = None,
-    dataset_loc: Annotated[str, typer.Option(help="dataset (with labels) to evaluate on")] = None,
-    results_fp: Annotated[str, typer.Option(help="location to save evaluation results to")] = None,
+    run_id: Annotated[
+        str, typer.Option(help="id of the specific run to load from")
+    ] = None,
+    dataset_loc: Annotated[
+        str, typer.Option(help="dataset (with labels) to evaluate on")
+    ] = None,
+    results_fp: Annotated[
+        str, typer.Option(help="location to save evaluation results to")
+    ] = None,
 ) -> Dict:  # pragma: no cover, eval workload
     """Evaluate on the holdout dataset.
 
@@ -141,7 +157,9 @@ def evaluate(
         "timestamp": datetime.datetime.now().strftime("%B %d, %Y %I:%M:%S %p"),
         "run_id": run_id,
         "overall": get_overall_metrics(y_true=y_true, y_pred=y_pred),
-        "per_class": get_per_class_metrics(y_true=y_true, y_pred=y_pred, class_to_index=preprocessor.class_to_index),
+        "per_class": get_per_class_metrics(
+            y_true=y_true, y_pred=y_pred, class_to_index=preprocessor.class_to_index
+        ),
         "slices": get_slice_metrics(y_true=y_true, y_pred=y_pred, ds=ds),
     }
     logger.info(json.dumps(metrics, indent=2))

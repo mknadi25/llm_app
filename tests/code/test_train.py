@@ -9,7 +9,12 @@ from src import train
 @pytest.mark.training
 def test_train_model(dataset_loc):
     experiment_name = utils.generate_experiment_name(prefix="test_train")
-    train_loop_config = {"dropout_p": 0.5, "lr": 1e-4, "lr_factor": 0.8, "lr_patience": 3}
+    train_loop_config = {
+        "dropout_p": 0.5,
+        "lr": 1e-4,
+        "lr_factor": 0.8,
+        "lr_patience": 3,
+    }
     result = train.train_model(
         experiment_name=experiment_name,
         dataset_loc=dataset_loc,

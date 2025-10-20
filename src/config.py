@@ -10,7 +10,9 @@ import mlflow
 ROOT_DIR = Path(__file__).parent.parent.absolute()
 LOGS_DIR = Path(ROOT_DIR, "logs")
 LOGS_DIR.mkdir(parents=True, exist_ok=True)
-EFS_DIR = Path(f"/efs/shared_storage/madewithml/{os.environ.get('GITHUB_USERNAME', '')}")
+EFS_DIR = Path(
+    f"/efs/shared_storage/madewithml/{os.environ.get('GITHUB_USERNAME', '')}"
+)
 try:
     Path(EFS_DIR).mkdir(parents=True, exist_ok=True)
 except OSError:
@@ -29,7 +31,9 @@ logging_config = {
     "disable_existing_loggers": False,
     "formatters": {
         "minimal": {"format": "%(message)s"},
-        "detailed": {"format": "%(levelname)s %(asctime)s [%(name)s:%(filename)s:%(funcName)s:%(lineno)d]\n%(message)s\n"},
+        "detailed": {
+            "format": "%(levelname)s %(asctime)s [%(name)s:%(filename)s:%(funcName)s:%(lineno)d]\n%(message)s\n"
+        },
     },
     "handlers": {
         "console": {

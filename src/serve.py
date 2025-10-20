@@ -64,7 +64,15 @@ class ModelDeployment:
     @app.post("/predict/")
     async def _predict(self, request: Request):
         data = await request.json()
-        sample_ds = ray.data.from_items([{"title": data.get("title", ""), "description": data.get("description", ""), "tag": ""}])
+        sample_ds = ray.data.from_items(
+            [
+                {
+                    "title": data.get("title", ""),
+                    "description": data.get("description", ""),
+                    "tag": "",
+                }
+            ]
+        )
         results = predict.predict_proba(ds=sample_ds, predictor=self.predictor)
 
         # Apply custom logic
@@ -82,11 +90,17 @@ class ModelDeployment:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--run_id", help="run ID to use for serving.")
-    parser.add_argument("--threshold", type=float, default=0.9, help="threshold for `other` class.")
+    parser.add_argument(
+        "--threshold", type=float, default=0.9, help="threshold for `other` class."
+    )
     args = parser.parse_args()
 
     # This part is the same
-    ray.init(runtime_env={"env_vars": {"GITHUB_USERNAME": os.environ.get("GITHUB_USERNAME", "")}})
+    ray.init(
+        runtime_env={
+            "env_vars": {"GITHUB_USERNAME": os.environ.get("GITHUB_USERNAME", "")}
+        }
+    )
     serve.run(ModelDeployment.bind(run_id=args.run_id, threshold=args.threshold))
 
     # --- THIS NEW BLOCK WILL FIX THE PROBLEM ---

@@ -7,7 +7,6 @@ style:
 	black .
 	flake8
 	python -m isort .
-	pyupgrade
 
 # Cleaning
 .PHONY: clean

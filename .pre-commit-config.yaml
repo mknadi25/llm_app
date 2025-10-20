@@ -17,7 +17,7 @@ repos:
     hooks:
     -   id: clean
         name: clean
-        entry: make
+        entry: /usr/bin/make
         args: ["clean"]
         language: system
         pass_filenames: false

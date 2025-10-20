@@ -70,7 +70,9 @@ class TorchPredictor:
     def from_checkpoint(cls, checkpoint):
         metadata = checkpoint.get_metadata()
         preprocessor = CustomPreprocessor(class_to_index=metadata["class_to_index"])
-        model = FinetunedLLM.load(Path(checkpoint.path, "args.json"), Path(checkpoint.path, "model.pt"))
+        model = FinetunedLLM.load(
+            Path(checkpoint.path, "args.json"), Path(checkpoint.path, "model.pt")
+        )
         return cls(preprocessor=preprocessor, model=model)
 
 
@@ -94,12 +96,19 @@ def predict_proba(
     results = []
     for i, prob in enumerate(y_prob):
         tag = preprocessor.index_to_class[prob.argmax()]
-        results.append({"prediction": tag, "probabilities": format_prob(prob, preprocessor.index_to_class)})
+        results.append(
+            {
+                "prediction": tag,
+                "probabilities": format_prob(prob, preprocessor.index_to_class),
+            }
+        )
     return results
 
 
 @app.command()
-def get_best_run_id(experiment_name: str = "", metric: str = "", mode: str = "") -> str:  # pragma: no cover, mlflow logic
+def get_best_run_id(
+    experiment_name: str = "", metric: str = "", mode: str = ""
+) -> str:  # pragma: no cover, mlflow logic
     """Get the best run_id from an MLflow experiment.
 
     Args:
@@ -119,7 +128,9 @@ def get_best_run_id(experiment_name: str = "", metric: str = "", mode: str = "")
     return run_id
 
 
-def get_best_checkpoint(run_id: str) -> TorchCheckpoint:  # pragma: no cover, mlflow logic
+def get_best_checkpoint(
+    run_id: str,
+) -> TorchCheckpoint:  # pragma: no cover, mlflow logic
     """Get the best checkpoint from a specific run.
 
     Args:
@@ -128,14 +139,18 @@ def get_best_checkpoint(run_id: str) -> TorchCheckpoint:  # pragma: no cover, ml
     Returns:
         TorchCheckpoint: Best checkpoint from the run.
     """
-    artifact_dir = urlparse(mlflow.get_run(run_id).info.artifact_uri).path  # get path from mlflow
+    artifact_dir = urlparse(
+        mlflow.get_run(run_id).info.artifact_uri
+    ).path  # get path from mlflow
     results = Result.from_path(artifact_dir)
     return results.best_checkpoints[0][0]
 
 
 @app.command()
 def predict(
-    run_id: Annotated[str, typer.Option(help="id of the specific run to load from")] = None,
+    run_id: Annotated[
+        str, typer.Option(help="id of the specific run to load from")
+    ] = None,
     title: Annotated[str, typer.Option(help="project title")] = None,
     description: Annotated[str, typer.Option(help="project description")] = None,
 ) -> Dict:  # pragma: no cover, tested with inference workload
@@ -154,7 +169,9 @@ def predict(
     predictor = TorchPredictor.from_checkpoint(best_checkpoint)
 
     # Predict
-    sample_ds = ray.data.from_items([{"title": title, "description": description, "tag": "other"}])
+    sample_ds = ray.data.from_items(
+        [{"title": title, "description": description, "tag": "other"}]
+    )
     results = predict_proba(ds=sample_ds, predictor=predictor)
     logger.info(json.dumps(results, cls=NumpyEncoder, indent=2))
     return results

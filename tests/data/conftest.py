@@ -50,7 +50,11 @@ def df(request):
         if config_path:
             cfg = _load_config_yaml(config_path)
             # expecting structure: data: { dataset_loc: "..." }
-            dataset_loc = cfg.get("data", {}).get("dataset_loc") if isinstance(cfg, dict) else None
+            dataset_loc = (
+                cfg.get("data", {}).get("dataset_loc")
+                if isinstance(cfg, dict)
+                else None
+            )
 
     # If still missing, raise a helpful error
     if not dataset_loc:
@@ -74,4 +78,6 @@ def df(request):
     try:
         return ge.dataset.PandasDataset(df_pd)
     except Exception as e:
-        raise pytest.UsageError(f"Failed to create Great Expectations DataSet from DataFrame: {e}")
+        raise pytest.UsageError(
+            f"Failed to create Great Expectations DataSet from DataFrame: {e}"
+        )
