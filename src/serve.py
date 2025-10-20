@@ -1,5 +1,6 @@
 import argparse
 import os
+import time
 from http import HTTPStatus
 from typing import Dict
 
@@ -19,16 +20,25 @@ app = FastAPI(
 )
 
 
-@serve.deployment(num_replicas="1", ray_actor_options={"num_cpus": 8, "num_gpus": 0})
+@serve.deployment(num_replicas="1", ray_actor_options={"num_cpus": 2, "num_gpus": 0})
 @serve.ingress(app)
 class ModelDeployment:
     def __init__(self, run_id: str, threshold: int = 0.9):
         """Initialize the model."""
+        print("✅ 1. Deployment __init__ started.") # ADD THIS
         self.run_id = run_id
         self.threshold = threshold
-        mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)  # so workers have access to model registry
+
+        print("✅ 2. Setting MLflow tracking URI...") # ADD THIS
+        mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
+        
+        print(f"✅ 3. Getting best checkpoint for run_id: {run_id}...") # ADD THIS
         best_checkpoint = predict.get_best_checkpoint(run_id=run_id)
+        print("✅ 4. Checkpoint successfully retrieved.") # ADD THIS
+
+        print("✅ 5. Loading predictor from checkpoint...") # ADD THIS
         self.predictor = predict.TorchPredictor.from_checkpoint(best_checkpoint)
+        print("✅ 6. Predictor successfully loaded. Deployment is ready.")
 
     @app.get("/")
     def _index(self) -> Dict:
@@ -67,10 +77,24 @@ class ModelDeployment:
         return {"results": results}
 
 
+# src/serve.py
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--run_id", help="run ID to use for serving.")
     parser.add_argument("--threshold", type=float, default=0.9, help="threshold for `other` class.")
     args = parser.parse_args()
-    ray.init(runtime_env={"env_vars": {"GITHUB_USERNAME": os.environ["GITHUB_USERNAME"]}})
+    
+    # This part is the same
+    ray.init(runtime_env={"env_vars": {"GITHUB_USERNAME": os.environ.get("GITHUB_USERNAME", "")}})
     serve.run(ModelDeployment.bind(run_id=args.run_id, threshold=args.threshold))
+
+    # --- THIS NEW BLOCK WILL FIX THE PROBLEM ---
+    try:
+        print("Server is running. Press Ctrl+C to stop.")
+        while True:
+            time.sleep(10)
+    except KeyboardInterrupt:
+        print("Shutting down server.")
+        serve.shutdown()
+    # --------------------------------------------
