@@ -1,5 +1,7 @@
 import ray
+
 from src import predict
+
 
 def get_label(text, predictor):
     if not isinstance(text, str):

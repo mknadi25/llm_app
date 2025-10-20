@@ -3,9 +3,9 @@ import os
 import random
 from typing import Any, Dict, List
 
-import yaml
 import numpy as np
 import torch
+import yaml
 from ray.data import DatasetContext
 from ray.train.torch import get_device
 

@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 import ray
-from ray.data import Dataset
+from ray.data import Dataset  # NOQA: F401
 
 from src import data
 

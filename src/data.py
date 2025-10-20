@@ -9,9 +9,10 @@ from ray.data import Dataset
 from sklearn.model_selection import train_test_split
 from transformers import BertTokenizer
 
+from src import utils
+
 # Import your own modules
 from src.config import STOPWORDS
-from src import utils
 
 # Define the default path to your config file
 CONFIG_PATH = "config/config.yaml"
@@ -19,9 +20,8 @@ CONFIG_PATH = "config/config.yaml"
 
 # In src/data.py
 
-def load_data(
-    config_path: str = CONFIG_PATH, dataset_loc: str = None, num_samples: int = None
-) -> Dataset:
+
+def load_data(config_path: str = CONFIG_PATH, dataset_loc: str = None, num_samples: int = None) -> Dataset:
     """Load data from the source specified in the config file.
 
     Args:
@@ -60,7 +60,7 @@ def stratify_split(
     """Split a dataset into train and test splits with equal
     amounts of data points from each class in the column we
     want to stratify on.
-    
+
     (This function's internal logic remains unchanged)
     """
 
@@ -85,7 +85,7 @@ def stratify_split(
 
 def clean_text(text: str, stopwords: List = STOPWORDS) -> str:
     """Clean raw text string.
-    
+
     (This function's internal logic remains unchanged)
     """
     text = text.lower()
@@ -101,7 +101,7 @@ def clean_text(text: str, stopwords: List = STOPWORDS) -> str:
 
 def tokenize(batch: Dict) -> Dict:
     """Tokenize the text input in our batch using a tokenizer.
-    
+
     (This function's internal logic remains unchanged)
     """
     tokenizer = BertTokenizer.from_pretrained("allenai/scibert_scivocab_uncased", return_dict=False)
@@ -111,7 +111,7 @@ def tokenize(batch: Dict) -> Dict:
 
 def preprocess(df: pd.DataFrame, class_to_index: Dict) -> Dict:
     """Preprocess the data in our dataframe.
-    
+
     (This function's internal logic remains unchanged)
     """
     df["text"] = df.title + " " + df.description
@@ -125,9 +125,10 @@ def preprocess(df: pd.DataFrame, class_to_index: Dict) -> Dict:
 
 class CustomPreprocessor:
     """Custom preprocessor class.
-    
+
     (This class's internal logic remains unchanged)
     """
+
     def __init__(self, class_to_index={}):
         self.class_to_index = class_to_index or {}
         self.index_to_class = {v: k for k, v in self.class_to_index.items()}
