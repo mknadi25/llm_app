@@ -110,3 +110,8 @@ airflow/airflow.db
 
 # Clean up
 .trash/
+/dvc_test.txt
+
+# Secrets and Credentials
+client_secret.json
+gdrive-service-account.json
