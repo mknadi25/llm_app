@@ -6,12 +6,12 @@ mkdir -p results # Use -p to avoid errors if the directory already exists
 # DEBUGGING FLAGS
 # Set a flag to `true` to run that stage, `false` to skip it.
 # =================================================================
-RUN_TEST_DATA=false
-RUN_TEST_CODE=false
-RUN_TRAIN=false
-RUN_EVALUATE=false
-RUN_TEST_MODEL=false
-RUN_SAVE_ARTIFACTS=false
+RUN_TEST_DATA=true
+RUN_TEST_CODE=true
+RUN_TRAIN=true
+RUN_EVALUATE=true
+RUN_TEST_MODEL=true
+RUN_SAVE_ARTIFACTS=true
 # =================================================================
 
 
