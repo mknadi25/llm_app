@@ -1,11 +1,21 @@
 # Data
 logs/
 stores/
-mlflow/
-results/
 workspaces/
-efs/
+mlruns/
 datasets/
+efs/
+mlflow/
+
+# Keep the specific, known artifact files in the results directory that
+# `workloads.sh` is known to produce.
+results/*
+!results/test_data_results.txt
+!results/test_code_results.txt
+!results/training_results.json
+!results/run_id.txt
+!results/evaluation_results.json
+!results/test_model_results.txt
 
 # VSCode
 .vscode/
