@@ -1,3 +1,50 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:1d0cf6c468f02a466684d92b554d200ace5b4825cb060c50795cba757b8345ed
-size 1158
+{
+  "timestamp": "October 27, 2025 06:39:27 PM",
+  "run_id": "94ef9aab9c334010af5aaf553cb3f3d2",
+  "overall": {
+    "precision": 0.9221628326978856,
+    "recall": 0.9214659685863874,
+    "f1": 0.9212836747674163,
+    "num_samples": 191.0
+  },
+  "per_class": {
+    "other": {
+      "precision": 1.0,
+      "recall": 0.9230769230769231,
+      "f1": 0.9600000000000001,
+      "num_samples": 26.0
+    },
+    "computer-vision": {
+      "precision": 0.9428571428571428,
+      "recall": 0.9295774647887324,
+      "f1": 0.9361702127659575,
+      "num_samples": 71.0
+    },
+    "natural-language-processing": {
+      "precision": 0.9024390243902439,
+      "recall": 0.9487179487179487,
+      "f1": 0.9249999999999999,
+      "num_samples": 78.0
+    },
+    "mlops": {
+      "precision": 0.8,
+      "recall": 0.75,
+      "f1": 0.7741935483870969,
+      "num_samples": 16.0
+    }
+  },
+  "slices": {
+    "nlp_llm": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "num_samples": 28
+    },
+    "short_text": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "num_samples": 7
+    }
+  }
+}

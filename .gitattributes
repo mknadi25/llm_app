@@ -1,5 +1,0 @@
-# created by each job.
-results/** filter=lfs diff=lfs merge=lfs -text
-
-# Track all MLflow artifacts with LFS.
-efs/mlflow/** filter=lfs diff=lfs merge=lfs -text

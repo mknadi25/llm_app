@@ -3,7 +3,7 @@ export PYTHONPATH=$PYTHONPATH:$PWD
 mkdir -p results # Use -p to avoid errors if the directory already exists
 
 # =================================================================
-# DEBUGGING FLAGS
+# DEBUGGING FLAGS./deploy/jobs/workloads.sh
 # Set a flag to `true` to run that stage, `false` to skip it.
 # =================================================================
 RUN_TEST_DATA=true
@@ -82,13 +82,31 @@ if [ "$RUN_TEST_MODEL" = true ] && [ -f "results/run_id.txt" ]; then
 fi
 
 
-# Save artifacts to Git LFS
+# Save artifacts to ArvanCloud S3
 if [ "$RUN_SAVE_ARTIFACTS" = true ]; then
-    echo "--- 6. SAVING ARTIFACTS TO GIT LFS ---"
-    git add .
-    git commit -m "chore(jobs): save artifacts from workload run on $(date)"
-    git push
-    echo "Successfully pushed artifacts to remote."
+    echo "--- 6. SAVING ARTIFACTS TO ARVANCLOUD S3 ---"
+
+    # Ensure the ARVAN_ENDPOINT environment variable is set
+    if [ -z "$ARVAN_ENDPOINT" ]; then
+        echo "Error: ARVAN_ENDPOINT environment variable is not set."
+        exit 1
+    fi
+
+    # Get model registry folder path from Python config
+    export MODEL_REGISTRY=$(python -c "from src import config; print(config.MODEL_REGISTRY)")
+
+    # Upload model registry folder to ArvanCloud S3, EXCLUDING the .trash directory
+    echo "Uploading MLflow model registry to s3://llmapp/$GITHUB_USERNAME/mlflow/"
+    aws --endpoint-url "$ARVAN_ENDPOINT" s3 cp "$MODEL_REGISTRY" "s3://llmapp/$GITHUB_USERNAME/mlflow/" \
+        --recursive \
+        --exclude ".trash/*" \
+        --exclude "TorchTrainer_*/*"
+
+    # Upload results folder to ArvanCloud S3
+    echo "Uploading results to s3://llmapp/$GITHUB_USERNAME/results/"
+    aws --endpoint-url "$ARVAN_ENDPOINT" s3 cp results/ "s3://llmapp/$GITHUB_USERNAME/results/" --recursive
+
+    echo "Successfully uploaded artifacts to ArvanCloud."
 fi
 
 echo "--- WORKLOAD SCRIPT FINISHED ---"
