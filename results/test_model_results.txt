@@ -1,3 +1,17 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:868abb998946e81d5e61db43d43903c4ec3ca3f3de0c5c733280c7dc26fdf01d
-size 1392
+============================= test session starts ==============================
+platform darwin -- Python 3.10.19, pytest-7.3.1, pluggy-1.6.0 -- /opt/anaconda3/envs/llm_app/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/kayvunnadi/Desktop/llm_app
+configfile: pyproject.toml
+plugins: anyio-4.11.0, cov-4.0.0, hydra-core-1.3.2
+collecting ... collected 7 items
+
+tests/model/test_behavioral.py::test_invariance[Transformers applied to NLP have revolutionized machine learning.-Transformers applied to NLP have disrupted machine learning.-natural-language-processing] PASSED [ 14%]
+tests/model/test_behavioral.py::test_directional[ML applied to text classification.-natural-language-processing] PASSED [ 28%]
+tests/model/test_behavioral.py::test_directional[ML applied to image classification.-computer-vision] PASSED [ 42%]
+tests/model/test_behavioral.py::test_directional[CNNs for text classification.-natural-language-processing] PASSED [ 57%]
+tests/model/test_behavioral.py::test_mft[Natural language processing is the next big wave in machine learning.-natural-language-processing] PASSED [ 71%]
+tests/model/test_behavioral.py::test_mft[MLOps is the next big wave in machine learning.-mlops] PASSED [ 85%]
+tests/model/test_behavioral.py::test_mft[This is about graph neural networks.-other] PASSED [100%]
+
+======================== 7 passed, 4 warnings in 17.14s ========================
