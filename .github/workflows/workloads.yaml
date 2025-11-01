@@ -47,4 +47,4 @@ jobs:
           RUN_EVALUATE=false \
           RUN_TEST_MODEL=false \
           RUN_SAVE_ARTIFACTS=false \
-          ./workloads.sh
+          ./deploy/jobs/workloads.sh
