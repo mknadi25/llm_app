@@ -40,7 +40,7 @@ jobs:
       # environment variables. This ensures ONLY the data test is run.
       - name: Run Data Test
         run: |
-          chmod +x workloads.sh
+          chmod +x deploy/jobs/workloads.sh
           RUN_TEST_DATA=true \
           RUN_TEST_CODE=false \
           RUN_TRAIN=false \
