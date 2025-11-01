@@ -6,12 +6,12 @@ mkdir -p results # Use -p to avoid errors if the directory already exists
 # DEBUGGING FLAGS./deploy/jobs/workloads.sh
 # Set a flag to `true` to run that stage, `false` to skip it.
 # =================================================================
-RUN_TEST_DATA=true
-RUN_TEST_CODE=true
-RUN_TRAIN=true
-RUN_EVALUATE=true
-RUN_TEST_MODEL=true
-RUN_SAVE_ARTIFACTS=true
+RUN_TEST_DATA=${RUN_TEST_DATA:-true}
+RUN_TEST_CODE=${RUN_TEST_CODE:-true}
+RUN_TRAIN=${RUN_TRAIN:-true}
+RUN_EVALUATE=${RUN_EVALUATE:-true}
+RUN_TEST_MODEL=${RUN_TEST_MODEL:-true}
+RUN_SAVE_ARTIFACTS=${RUN_SAVE_ARTIFACTS:-true}
 # =================================================================
 
 
