@@ -174,7 +174,7 @@ pip install -r requirements.txt
 
 ```bash
 export GITHUB_USERNAME="your_username"
-export ARVAN_ENDPOINT="https://s3.ir-thr-at1.arvanstorage.com"  # Optional, for S3 storage
+export S3_ENDPOINT="URL_address_to_s3_bucket"  # Optional, for S3 storage
 ```
 
 ### Step 5: Configure Dataset Location
@@ -439,7 +439,7 @@ data:
 ### Environment Variables
 
 - `GITHUB_USERNAME`: Your GitHub username (required for Ray runtime)
-- `ARVAN_ENDPOINT`: S3 endpoint URL (optional, for artifact storage)
+- `S3_ENDPOINT`: S3 endpoint URL (optional, for artifact storage)
 
 ### MLflow Configuration
 
@@ -656,7 +656,7 @@ The system supports deployment on cloud platforms:
 - **GCP**: Use Cloud Storage for model registry
 - **Azure**: Use Azure Blob Storage
 
-Configure the `ARVAN_ENDPOINT` environment variable for S3-compatible storage.
+Configure the `S3_ENDPOINT` environment variable for S3-compatible storage.
 
 ## Development Workflow
 
